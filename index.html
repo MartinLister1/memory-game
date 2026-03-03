@@ -57,9 +57,10 @@
     .stats {
       display: flex;
       justify-content: center;
-      gap: 30px;
+      gap: 20px;
       margin-bottom: 20px;
       margin-top: 15px;
+      flex-wrap: wrap;
     }
 
     .stat {
@@ -67,6 +68,11 @@
       padding: 10px 20px;
       border-radius: 10px;
       border: 2px solid #333366;
+    }
+
+    /* best score stat looks a bit different */
+    .stat.best {
+      border-color: #f7c948;
     }
 
     .stat h3 {
@@ -187,6 +193,10 @@
         <h3>TIME</h3>
         <p id="timer">0s</p>
       </div>
+      <div class="stat best">
+        <h3>BEST</h3>
+        <p id="best">-</p>
+      </div>
     </section>
 
     <section class="grid easy" id="grid"></section>
@@ -216,18 +226,39 @@
     var timerInterval = null;
     var gameStarted = false;
 
-    // change difficulty and restart
+    // keep separate best scores for easy and hard
+    var bestEasy = null;
+    var bestHard = null;
+
     function setDifficulty(level, btn) {
       currentDifficulty = level;
 
-      // update which button looks active
       var buttons = document.querySelectorAll('.difficulty button');
       for (var i = 0; i < buttons.length; i++) {
         buttons[i].classList.remove('active');
       }
       btn.classList.add('active');
 
+      // show the right best score for this difficulty
+      updateBestDisplay();
+
       startGame();
+    }
+
+    // updates the best score on screen
+    function updateBestDisplay() {
+      var best = null;
+      if (currentDifficulty == 'easy') {
+        best = bestEasy;
+      } else {
+        best = bestHard;
+      }
+
+      if (best == null) {
+        document.getElementById('best').textContent = '-';
+      } else {
+        document.getElementById('best').textContent = best;
+      }
     }
 
     function startGame() {
@@ -244,7 +275,8 @@
       document.getElementById('pairs').textContent = '0';
       document.getElementById('timer').textContent = '0s';
 
-      // pick the right emojis based on difficulty
+      updateBestDisplay();
+
       var emojis = easyEmojis;
       if (currentDifficulty == 'hard') {
         emojis = hardEmojis;
@@ -278,8 +310,6 @@
 
       if (this.classList.contains('flipped')) return;
       if (this.classList.contains('matched')) return;
-
-      // if there are already 2 cards flipped that havent been checked yet dont allow another click
       if (firstCard != null && secondCard != null) return;
 
       if (gameStarted == false) {
@@ -290,18 +320,15 @@
       this.textContent = this.dataset.emoji;
       this.classList.add('flipped');
 
-      // save the first card then wait for second click
       if (firstCard == null) {
         firstCard = this;
         return;
       }
 
-      // second card clicked
       secondCard = this;
       moves++;
       document.getElementById('moves').textContent = moves;
 
-      // check if they are the same
       if (firstCard.dataset.emoji == secondCard.dataset.emoji) {
 
         firstCard.classList.add('matched');
@@ -320,6 +347,20 @@
 
         if (matchedPairs == totalPairs) {
           clearInterval(timerInterval);
+
+          // check if this is a new best score
+          if (currentDifficulty == 'easy') {
+            if (bestEasy == null || moves < bestEasy) {
+              bestEasy = moves;
+              updateBestDisplay();
+            }
+          } else {
+            if (bestHard == null || moves < bestHard) {
+              bestHard = moves;
+              updateBestDisplay();
+            }
+          }
+
           setTimeout(function() {
             alert('You win!! Finished in ' + seconds + ' seconds and ' + moves + ' moves');
           }, 400);
@@ -327,7 +368,6 @@
 
       } else {
 
-        // not a match so flip them back after a short delay
         var card1 = firstCard;
         var card2 = secondCard;
 
