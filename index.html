@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Memory Card Game</title>
   <style>
-    /* basic page styling */
+
     body {
       background-color: #1a1a2e;
       font-family: Arial, sans-serif;
@@ -14,23 +14,23 @@
       padding: 20px;
     }
 
-    h1 {
+    header h1 {
       color: #f7c948;
       font-size: 36px;
-      margin-bottom: 5px;
     }
 
-    p {
+    header p {
       color: #aaaaaa;
-      margin-bottom: 20px;
+      margin-bottom: 0px;
     }
 
-    /* stats at the top */
+    /* stats */
     .stats {
       display: flex;
       justify-content: center;
       gap: 30px;
       margin-bottom: 20px;
+      margin-top: 15px;
     }
 
     .stat {
@@ -44,6 +44,7 @@
       font-size: 12px;
       color: #aaaaaa;
       margin-bottom: 5px;
+      margin-top: 0px;
     }
 
     .stat p {
@@ -53,7 +54,7 @@
       margin: 0;
     }
 
-    /* the card grid */
+    /* card grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(4, 90px);
@@ -62,7 +63,6 @@
       margin-bottom: 20px;
     }
 
-    /* each card */
     .card {
       width: 90px;
       height: 90px;
@@ -76,25 +76,21 @@
       cursor: pointer;
     }
 
-    /* card when it is flipped */
     .card.flipped {
       background-color: #252545;
       border-color: #6666aa;
     }
 
-    /* card when it is matched */
     .card.matched {
       background-color: #1a3a2a;
       border-color: #6bffb8;
     }
 
-    /* card when it doesnt match - goes red */
     .card.wrong {
       background-color: #3a1a1a;
       border-color: #ff6b6b;
     }
 
-    /* the restart button */
     button {
       background-color: #f7c948;
       color: black;
@@ -110,41 +106,51 @@
     button:hover {
       background-color: #e0b030;
     }
+
   </style>
 </head>
 <body>
 
-  <h1>Memory Card Game</h1>
-  <p>Made by Martin Lister</p>
+  <header>
+    <h1>Memory Card Game</h1>
+    <p>Made by Martin Lister</p>
+  </header>
 
-  <!-- stats bar -->
-  <div class="stats">
-    <div class="stat">
-      <h3>MOVES</h3>
-      <p id="moves">0</p>
-    </div>
-    <div class="stat">
-      <h3>PAIRS</h3>
-      <p id="pairs">0</p>
-    </div>
-    <div class="stat">
-      <h3>TIME</h3>
-      <p id="timer">0s</p>
-    </div>
-  </div>
+  <main>
 
-  <!-- the card grid -->
-  <div class="grid" id="grid"></div>
+    <section class="stats">
+      <div class="stat">
+        <h3>MOVES</h3>
+        <p id="moves">0</p>
+      </div>
+      <div class="stat">
+        <h3>PAIRS</h3>
+        <p id="pairs">0</p>
+      </div>
+      <div class="stat">
+        <h3>TIME</h3>
+        <p id="timer">0s</p>
+      </div>
+    </section>
 
-  <button onclick="startGame()">New Game</button>
+    <section class="grid" id="grid"></section>
+
+    <section>
+      <button onclick="startGame()">New Game</button>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Built with HTML, CSS and JavaScript</p>
+  </footer>
 
   <script>
 
-    // all the emojis i am using for the cards
     var emojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼'];
 
-    // variables to keep track of the game
-    var flippedCards = [];
+    var firstCard = null;
+    var secondCard = null;
     var matchedPairs = 0;
     var moves = 0;
     var canFlip = true;
@@ -152,37 +158,25 @@
     var timerInterval = null;
     var gameStarted = false;
 
-    // this shuffles the cards so they are in a random order
-    function shuffle(array) {
-      for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-      }
-      return array;
-    }
-
-    // this starts a new game and resets everything
     function startGame() {
-      // reset all the variables
+
       clearInterval(timerInterval);
       seconds = 0;
       moves = 0;
       matchedPairs = 0;
-      flippedCards = [];
+      firstCard = null;
+      secondCard = null;
       canFlip = true;
       gameStarted = false;
 
-      // reset the stats on the page
       document.getElementById('moves').textContent = '0';
       document.getElementById('pairs').textContent = '0';
       document.getElementById('timer').textContent = '0s';
 
-      // make pairs of emojis and shuffle them
-      var cards = shuffle([...emojis, ...emojis]);
+      // duplicate the emojis so we have pairs then shuffle them
+      // found this shuffle method on stackoverflow
+      var cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
 
-      // clear the grid and build the cards
       var grid = document.getElementById('grid');
       grid.innerHTML = '';
 
@@ -196,7 +190,6 @@
       }
     }
 
-    // starts the timer when the first card is clicked
     function startTimer() {
       timerInterval = setInterval(function() {
         seconds++;
@@ -204,73 +197,76 @@
       }, 1000);
     }
 
-    // this runs when a card is clicked
     function handleClick() {
-      // dont do anything if we already have 2 cards flipped
-      if (!canFlip) return;
 
-      // dont flip a card that is already flipped or matched
+      if (!canFlip) return;
       if (this.classList.contains('flipped')) return;
       if (this.classList.contains('matched')) return;
 
-      // start the timer on the first click
-      if (!gameStarted) {
+      if (gameStarted == false) {
         gameStarted = true;
         startTimer();
       }
 
-      // show the emoji on the card
       this.textContent = this.dataset.emoji;
       this.classList.add('flipped');
-      flippedCards.push(this);
 
-      // if 2 cards are flipped check if they match
-      if (flippedCards.length === 2) {
-        moves++;
-        document.getElementById('moves').textContent = moves;
-        checkIfMatch();
+      // save the first card then wait for second click
+      if (firstCard == null) {
+        firstCard = this;
+        return;
       }
-    }
 
-    // checks if the 2 flipped cards are the same
-    function checkIfMatch() {
-      var card1 = flippedCards[0];
-      var card2 = flippedCards[1];
+      // second card clicked
+      secondCard = this;
+      moves++;
+      document.getElementById('moves').textContent = moves;
 
-      if (card1.dataset.emoji === card2.dataset.emoji) {
-        // they match so keep them flipped
-        card1.classList.add('matched');
-        card2.classList.add('matched');
-        flippedCards = [];
+      // check if they are the same
+      if (firstCard.dataset.emoji == secondCard.dataset.emoji) {
+
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+
+        firstCard = null;
+        secondCard = null;
+
         matchedPairs++;
         document.getElementById('pairs').textContent = matchedPairs;
 
-        // check if the game is over
-        if (matchedPairs === emojis.length) {
+        if (matchedPairs == emojis.length) {
           clearInterval(timerInterval);
           setTimeout(function() {
-            alert('Well done! You finished in ' + seconds + ' seconds with ' + moves + ' moves!');
+            alert('You win!! Finished in ' + seconds + ' seconds and ' + moves + ' moves');
           }, 400);
         }
 
       } else {
-        // they dont match so flip them back over
+
+        // not a match so flip them back
         canFlip = false;
-        card1.classList.add('wrong');
-        card2.classList.add('wrong');
+
+        firstCard.classList.add('wrong');
+        secondCard.classList.add('wrong');
+
+        // need to save these because firstCard gets reset in the timeout
+        var card1 = firstCard;
+        var card2 = secondCard;
+
+        firstCard = null;
+        secondCard = null;
 
         setTimeout(function() {
           card1.textContent = '?';
           card2.textContent = '?';
           card1.classList.remove('flipped', 'wrong');
           card2.classList.remove('flipped', 'wrong');
-          flippedCards = [];
           canFlip = true;
         }, 900);
+
       }
     }
 
-    // start the game when the page loads
     startGame();
 
   </script>
