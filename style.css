@@ -67,18 +67,17 @@ header p {
   border-color: #f7c948;
 }
 
-.stat h3 {
+.stat small {
   font-size: 12px;
   color: #aaaaaa;
   margin-bottom: 5px;
-  margin-top: 0px;
+  display: block;
 }
 
-.stat p {
+.stat strong {
   font-size: 28px;
-  font-weight: bold;
   color: #f7c948;
-  margin: 0;
+  display: block;
 }
 
 /* card grid */
@@ -154,4 +153,44 @@ footer p {
   color: #aaaaaa;
   font-size: 12px;
   margin-top: 20px;
+}
+/* mobile friendly layout - this kicks in on smaller screens */
+@media (max-width: 500px) {
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .stats {
+    gap: 10px;
+  }
+
+  .stat {
+    padding: 8px 12px;
+  }
+
+  .stat strong {
+    font-size: 20px;
+  }
+
+  .grid.easy {
+    grid-template-columns: repeat(4, 70px);
+  }
+
+  .grid.hard {
+    grid-template-columns: repeat(4, 60px);
+  }
+
+  .grid.easy .card {
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+  }
+
+  .grid.hard .card {
+    width: 60px;
+    height: 60px;
+    font-size: 22px;
+  }
+
 }
