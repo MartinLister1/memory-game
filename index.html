@@ -24,6 +24,35 @@
       margin-bottom: 0px;
     }
 
+    /* difficulty buttons */
+    .difficulty {
+      margin-top: 15px;
+      margin-bottom: 5px;
+    }
+
+    .difficulty button {
+      background-color: #16213e;
+      color: #aaaaaa;
+      border: 2px solid #333366;
+      font-size: 14px;
+      font-weight: bold;
+      padding: 8px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .difficulty button:hover {
+      border-color: #f7c948;
+      color: #f7c948;
+    }
+
+    .difficulty button.active {
+      background-color: #f7c948;
+      color: black;
+      border-color: #f7c948;
+    }
+
     /* stats */
     .stats {
       display: flex;
@@ -57,15 +86,20 @@
     /* card grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, 90px);
       gap: 10px;
       justify-content: center;
       margin-bottom: 20px;
     }
 
+    .grid.easy {
+      grid-template-columns: repeat(4, 90px);
+    }
+
+    .grid.hard {
+      grid-template-columns: repeat(4, 80px);
+    }
+
     .card {
-      width: 90px;
-      height: 90px;
       background-color: #16213e;
       border: 2px solid #333366;
       border-radius: 10px;
@@ -74,6 +108,17 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+    }
+
+    .grid.easy .card {
+      width: 90px;
+      height: 90px;
+    }
+
+    .grid.hard .card {
+      width: 80px;
+      height: 80px;
+      font-size: 28px;
     }
 
     .card.flipped {
@@ -91,7 +136,7 @@
       border-color: #ff6b6b;
     }
 
-    button {
+    .new-game-btn {
       background-color: #f7c948;
       color: black;
       font-size: 16px;
@@ -103,8 +148,14 @@
       margin-top: 10px;
     }
 
-    button:hover {
+    .new-game-btn:hover {
       background-color: #e0b030;
+    }
+
+    footer p {
+      color: #aaaaaa;
+      font-size: 12px;
+      margin-top: 20px;
     }
 
   </style>
@@ -117,6 +168,11 @@
   </header>
 
   <main>
+
+    <section class="difficulty">
+      <button class="active" onclick="setDifficulty('easy', this)">Easy</button>
+      <button onclick="setDifficulty('hard', this)">Hard</button>
+    </section>
 
     <section class="stats">
       <div class="stat">
@@ -133,10 +189,10 @@
       </div>
     </section>
 
-    <section class="grid" id="grid"></section>
+    <section class="grid easy" id="grid"></section>
 
     <section>
-      <button onclick="startGame()">New Game</button>
+      <button class="new-game-btn" onclick="startGame()">New Game</button>
     </section>
 
   </main>
@@ -147,16 +203,32 @@
 
   <script>
 
-    var emojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼'];
+    var easyEmojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼'];
+    var hardEmojis = ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮'];
+
+    var currentDifficulty = 'easy';
 
     var firstCard = null;
     var secondCard = null;
     var matchedPairs = 0;
     var moves = 0;
-    var canFlip = true;
     var seconds = 0;
     var timerInterval = null;
     var gameStarted = false;
+
+    // change difficulty and restart
+    function setDifficulty(level, btn) {
+      currentDifficulty = level;
+
+      // update which button looks active
+      var buttons = document.querySelectorAll('.difficulty button');
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('active');
+      }
+      btn.classList.add('active');
+
+      startGame();
+    }
 
     function startGame() {
 
@@ -166,19 +238,24 @@
       matchedPairs = 0;
       firstCard = null;
       secondCard = null;
-      canFlip = true;
       gameStarted = false;
 
       document.getElementById('moves').textContent = '0';
       document.getElementById('pairs').textContent = '0';
       document.getElementById('timer').textContent = '0s';
 
-      // duplicate the emojis so we have pairs then shuffle them
+      // pick the right emojis based on difficulty
+      var emojis = easyEmojis;
+      if (currentDifficulty == 'hard') {
+        emojis = hardEmojis;
+      }
+
       // found this shuffle method on stackoverflow
       var cards = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
 
       var grid = document.getElementById('grid');
       grid.innerHTML = '';
+      grid.className = 'grid ' + currentDifficulty;
 
       for (var i = 0; i < cards.length; i++) {
         var card = document.createElement('div');
@@ -199,9 +276,11 @@
 
     function handleClick() {
 
-      if (!canFlip) return;
       if (this.classList.contains('flipped')) return;
       if (this.classList.contains('matched')) return;
+
+      // if there are already 2 cards flipped that havent been checked yet dont allow another click
+      if (firstCard != null && secondCard != null) return;
 
       if (gameStarted == false) {
         gameStarted = true;
@@ -234,7 +313,12 @@
         matchedPairs++;
         document.getElementById('pairs').textContent = matchedPairs;
 
-        if (matchedPairs == emojis.length) {
+        var totalPairs = easyEmojis.length;
+        if (currentDifficulty == 'hard') {
+          totalPairs = hardEmojis.length;
+        }
+
+        if (matchedPairs == totalPairs) {
           clearInterval(timerInterval);
           setTimeout(function() {
             alert('You win!! Finished in ' + seconds + ' seconds and ' + moves + ' moves');
@@ -243,26 +327,22 @@
 
       } else {
 
-        // not a match so flip them back
-        canFlip = false;
-
-        firstCard.classList.add('wrong');
-        secondCard.classList.add('wrong');
-
-        // need to save these because firstCard gets reset in the timeout
+        // not a match so flip them back after a short delay
         var card1 = firstCard;
         var card2 = secondCard;
 
         firstCard = null;
         secondCard = null;
 
+        card1.classList.add('wrong');
+        card2.classList.add('wrong');
+
         setTimeout(function() {
           card1.textContent = '?';
           card2.textContent = '?';
           card1.classList.remove('flipped', 'wrong');
           card2.classList.remove('flipped', 'wrong');
-          canFlip = true;
-        }, 900);
+        }, 800);
 
       }
     }
