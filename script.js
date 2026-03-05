@@ -12,8 +12,9 @@ var timerInterval = null;
 var gameStarted = false;
 
 // keep separate best scores for easy and hard
-var bestEasy = null;
-var bestHard = null;
+// load best scores from localStorage so they survive page refreshes
+var bestEasy = localStorage.getItem('bestEasy') ? parseInt(localStorage.getItem('bestEasy')) : null;
+var bestHard = localStorage.getItem('bestHard') ? parseInt(localStorage.getItem('bestHard')) : null;
 
 function setDifficulty(level, btn) {
   currentDifficulty = level;
