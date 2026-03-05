@@ -1,19 +1,21 @@
 body {
-  background-color: #2b2b2b;
+  background-color: #1c1c1c;
   font-family: Arial, sans-serif;
-  color: white;
+  color: #dddddd;
   text-align: center;
   padding: 20px;
+  margin: 0;
 }
 
 header h1 {
-  color: #4a90d9;
-  font-size: 36px;
+  color: #e8734a;
+  font-size: 34px;
+  margin-bottom: 5px;
 }
 
 header p {
-  color: #999999;
-  margin-bottom: 0px;
+  color: #888888;
+  margin-bottom: 0;
 }
 
 /* difficulty buttons */
@@ -23,26 +25,26 @@ header p {
 }
 
 .difficulty button {
-  background-color: #333333;
-  color: #999999;
-  border: 2px solid #444444;
+  background-color: #272727;
+  color: #888888;
+  border: 2px solid #3a3a3a;
   font-size: 14px;
   font-weight: bold;
   padding: 8px 20px;
-  border-radius: 20px;
+  border-radius: 6px;
   cursor: pointer;
   margin: 5px;
 }
 
 .difficulty button:hover {
-  border-color: #4a90d9;
-  color: #4a90d9;
+  border-color: #e8734a;
+  color: #e8734a;
 }
 
 .difficulty button.active {
-  background-color: #4a90d9;
+  background-color: #e8734a;
   color: white;
-  border-color: #4a90d9;
+  border-color: #e8734a;
 }
 
 /* stats */
@@ -56,26 +58,26 @@ header p {
 }
 
 .stat {
-  background-color: #333333;
+  background-color: #272727;
   padding: 10px 20px;
-  border-radius: 10px;
-  border: 2px solid #444444;
+  border-radius: 6px;
+  border: 2px solid #3a3a3a;
 }
 
 .stat.best {
-  border-color: #4a90d9;
+  border-color: #e8734a;
 }
 
 .stat small {
   font-size: 12px;
-  color: #999999;
+  color: #888888;
   margin-bottom: 5px;
   display: block;
 }
 
 .stat strong {
   font-size: 28px;
-  color: #4a90d9;
+  color: #e8734a;
   display: block;
 }
 
@@ -96,9 +98,9 @@ header p {
 }
 
 .card {
-  background-color: #333333;
-  border: 2px solid #444444;
-  border-radius: 10px;
+  background-color: #272727;
+  border: 2px solid #3a3a3a;
+  border-radius: 6px;
   font-size: 36px;
   display: flex;
   align-items: center;
@@ -118,35 +120,35 @@ header p {
 }
 
 .card.flipped {
-  background-color: #3d3d3d;
-  border-color: #4a90d9;
+  background-color: #303030;
+  border-color: #e8734a;
 }
 
 .card.matched {
-  background-color: #1a2a3a;
-  border-color: #4a90d9;
-  box-shadow: 0 0 8px #4a90d9;
+  background-color: #2a1f1a;
+  border-color: #e8734a;
+  box-shadow: 0 0 8px rgba(232, 115, 74, 0.4);
 }
 
 .card.wrong {
-  background-color: #3a1a1a;
-  border-color: #cc4444;
+  background-color: #2e1a1a;
+  border-color: #bb4444;
 }
 
 .new-game-btn {
-  background-color: #4a90d9;
+  background-color: #e8734a;
   color: white;
   font-size: 16px;
   font-weight: bold;
   padding: 12px 30px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   margin-top: 10px;
 }
 
 .new-game-btn:hover {
-  background-color: #3a7bc8;
+  background-color: #d4623a;
 }
 
 /* makes it work better on phones */
@@ -159,7 +161,7 @@ header p {
 }
 
 footer p {
-  color: #999999;
+  color: #888888;
   font-size: 12px;
   margin-top: 20px;
 }
